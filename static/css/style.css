@@ -1,0 +1,156 @@
+/* Reset some default styles for consistency */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+h1 {
+    text-align: center;
+    padding: 1rem 0;
+    background-color: #3498db;
+    color: white;
+    margin: 0;
+}
+
+p {
+    margin-bottom: 0.5rem;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 20px; /* Plus arrondi pour un look moderne */
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px); /* Léger effet de levitation */
+}
+
+button:active {
+    background-color: #2471A3;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transform: translateY(0); /* Annuler l'effet de levitation lors du clic */
+}
+
+#children-list {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+#children-list ul {
+    list-style-type: none;
+}
+
+#children-list ul li {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#children-list ul li:hover {
+    background-color: #f8f8f8;
+}
+
+#children-list ul li:last-child {
+    border-bottom: none;
+}
+
+#actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 1rem;
+}
+
+#child-details {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#vaccine-schedule {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+#vaccine-schedule img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media screen and (max-width: 600px) {
+    body {
+        padding: 0.5rem;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    #actions {
+        grid-template-columns: 1fr; /* Une seule colonne pour les petits écrans */
+    }
+
+    button {
+        width: 100%;
+    }
+
+    #children-list {
+        border-radius: 0; /* Supprimer les bords arrondis pour un meilleur affichage sur mobile */
+    }
+    background-image: url("{{ url_for('static', filename='images/cabinet.jpeg') }}");
+    background-size: cover; /* Pour couvrir toute la page */
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Pour que l'image reste fixe quand on scroll */
+
+    button[onclick="deleteChild()"], button[onclick="deleteVisit()"] {
+        background-color: #e74c3c; /* Rouge pour indiquer une action de suppression */
+        color: white;
+    }
+    
+    #visits-list li button {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    
+    #visits-list li button:hover {
+        background-color: #c0392b;
+    }
+
+}
