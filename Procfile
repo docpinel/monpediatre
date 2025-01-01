@@ -1,1 +1,1 @@
-web: python routes.py
+web: gunicorn --bind 0.0.0.0:8080 routes:app
