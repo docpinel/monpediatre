@@ -5,6 +5,12 @@ from dateutil.relativedelta import relativedelta
 import os
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
+routes = Flask(__name__)
+
+# Vos routes ici...
+
+if __name__ == "__main__":
+    routes.run()
 
 # Déterminer le chemin des fichiers JSON
 app_path = os.path.dirname(os.path.abspath(__file__))
@@ -46,7 +52,6 @@ def convert_to_string(data_list):
     return data_list
 
 # Routes Flask
-
 @app.route('/')
 def splash():
     return render_template('splash.html')
@@ -70,8 +75,6 @@ def ajouter_enfant():
         return jsonify({"status": "succès", "message": "Enfant ajouté avec succès"}), 201
     except ValueError:
         return jsonify({"status": "erreur", "message": "Format de date invalide"}), 400
-
-
 
 @app.route('/api/supprimer_enfant/<nom>', methods=['DELETE'])
 def supprimer_enfant(nom):
