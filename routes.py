@@ -10,8 +10,9 @@ routes = Flask(__name__)
 # Vos routes ici...
 
 if __name__ == "__main__":
-    routes.run()
-
+    import os
+    routes.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    
 # Déterminer le chemin des fichiers JSON
 app_path = os.path.dirname(os.path.abspath(__file__))
 json_file_path = os.path.join(app_path, "data.json")
