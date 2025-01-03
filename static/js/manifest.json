@@ -1,6 +1,6 @@
 {
-    "name": "Mon APLS",
-    "short_name": "APLS",
+    "name": "Mon Pédiatre",
+    "short_name": "Mon Pédiatre",
     "icons": [
       {
         "src": "/static/icons/icon-192x192.png",
