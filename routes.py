@@ -4,8 +4,8 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 import os
 
+
 app = Flask(__name__, static_url_path='/static', static_folder='static')
-routes = Flask(__name__)
 
 
 
