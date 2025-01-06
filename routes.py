@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request  # Importer les classes Flask, render_template et jsonify
 import json
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fonction pour ajouter un enfant
     function addChild() {
+        const childRank = prompt ("Rang de L'enfant :");
         const childName = prompt("Nom de l'enfant :");
         const birthDate = prompt("Date de naissance (jj/mm/aaaa) :");
         
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    rank: childRank,
                     name: childName,
                     birth_date: birthDate
                 })
@@ -42,8 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 list.innerHTML = ''; // Effacer la liste existante
                 children.forEach(child => {
                     let li = document.createElement('li');
-                    li.textContent = child.name;
-                    li.addEventListener('click', () => showChildDetails(child.name));
+                    li.textContent = child.rank+'-'+child.name;
                     list.appendChild(li);
                 });
             });
