@@ -13,6 +13,10 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-image: url("{{ url_for('static', filename='images/cabinet.jpeg') }}");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 h1, h2 {
@@ -24,7 +28,7 @@ h1, h2 {
 h1 {
     text-align: center;
     padding: 1rem 0;
-    background-color: #3498db;
+    background-color: rgba(52, 152, 219, 0.8);
     color: white;
     margin: 0;
 }
@@ -33,82 +37,69 @@ p {
     margin-bottom: 0.5rem;
 }
 
+.container {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem auto;
+    max-width: 800px;
+    width: 100%;
+}
+
 button {
     background-color: #3498db;
     color: white;
     border: none;
-    border-radius: 20px; /* Plus arrondi pour un look moderne */
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    border-radius: 20px;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    text-align: center;
+    text-decoration: none;
 }
 
 button:hover {
     background-color: #2980b9;
-    transform: translateY(-2px); /* Léger effet de levitation */
+    transform: translateY(-2px);
 }
 
 button:active {
     background-color: #2471A3;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    transform: translateY(0); /* Annuler l'effet de levitation lors du clic */
-}
-
-#children-list {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 1rem 0;
-}
-
-#children-list ul {
-    list-style-type: none;
-}
-
-#children-list ul li {
-    padding: 0.75rem;
-    border-bottom: 1px solid #e0e0e0;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#children-list ul li:hover {
-    background-color: #f8f8f8;
-}
-
-#children-list ul li:last-child {
-    border-bottom: none;
+    transform: translateY(0);
 }
 
 #actions {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Grid layout for buttons */
+    gap: 15px; /* Gap between buttons */
     padding: 1rem;
+    justify-items: center; /* Center items within grid cells */
 }
 
-#child-details {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.info-box {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-#vaccine-schedule {
-    text-align: center;
-    margin: 1rem 0;
+.info-box h2 {
+    color: #3498db; /* For diversification */
 }
 
-#vaccine-schedule img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Override for next vaccine */
+#vaccine-info .info-box h2 {
+    color: #e74c3c;
 }
 
+.info-box p {
+    line-height: 1.6;
+}
 
 /* Responsive design */
 @media screen and (max-width: 600px) {
@@ -120,38 +111,15 @@ button:active {
         font-size: 1.5em;
     }
 
-    #actions {
-        grid-template-columns: 1fr; /* Une seule colonne pour les petits écrans */
-    }
-
     button {
         width: 100%;
     }
 
-    #children-list {
-        border-radius: 0; /* Supprimer les bords arrondis pour un meilleur affichage sur mobile */
-    }
-    background-image: url("{{ url_for('static', filename='images/cabinet.jpeg') }}");
-    background-size: cover; /* Pour couvrir toute la page */
-    background-repeat: no-repeat;
-    background-attachment: fixed; /* Pour que l'image reste fixe quand on scroll */
-
-    button[onclick="deleteChild()"], button[onclick="deleteVisit()"] {
-        background-color: #e74c3c; /* Rouge pour indiquer une action de suppression */
-        color: white;
-    }
-    
-    #visits-list li button {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        margin-left: 10px;
-        cursor: pointer;
-    }
-    
-    #visits-list li button:hover {
-        background-color: #c0392b;
+    .container {
+        border-radius: 0;
     }
 
+    #actions {
+        grid-template-columns: 1fr; /* Single column layout for mobile */
+    }
 }

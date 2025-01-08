@@ -19,16 +19,19 @@
      <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>À propos - Mon Pédiatre</title>
+    <title>À propos - Mon Pédiatre Lite</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>À propos</h1>
-    <p>Mon Pédiatre<br>
-    Développé par Dr Mhiri Kais<br>
-    Email: mhiri.kais@live.fr<br>
-    Tél: 36484849 / 55182666<br>
-    Janvier 2025</p>
-    <button onclick="window.location.href='/index'">Retour</button>
+    <div class="container">
+        <h1>À propos</h1>
+        <p>Mon Pédiatre Lite<br>
+        Développé par Dr Mhiri Kais<br>
+        Email: mhiri.kais@live.fr<br>
+        Tél: 36484849 / 55182666<br>
+        Janvier 2025</p>
+        <p>Cette version Lite de l'application est conçue pour fournir des informations essentielles sur la santé infantile sans stocker de données personnelles. Elle inclut des fonctionnalités telles que la diversification alimentaire, le calendrier vaccinal tunisien, et des informations sur les prochains vaccins basées sur l'âge de l'enfant.</p>
+        <button onclick="window.location.href='/index'" class="btn">Retour</button>
+    </div>
 </body>
 </html>

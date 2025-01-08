@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diversification Alimentaire - Mon Pédiatre Lite</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .info-box {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .info-box h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        .info-box p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diversification Alimentaire</h1>
+        <p>Date de naissance de l'enfant : {{ birth_date }}</p>
+        <p>Âge de l'enfant : {{ age }}</p>
+        
+        <div class="info-box">
+            <h2>Recommandations Alimentaires</h2>
+            <p>{{ diversification_info }}</p>
+        </div>
+        
+        <div id="actions">
+            <button onclick="window.location.href='/index'" class="btn">Retour</button>
+            <button onclick="window.location.href='/prochain_vaccin?birth_date={{ birth_date }}'" class="btn">Prochain Vaccin</button>
+        </div>
+    </div>
+</body>
+</html>

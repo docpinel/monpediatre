@@ -1,105 +1,47 @@
-from flask import Flask, render_template, jsonify, request  # Importer les classes Flask, render_template et jsonify
-import json
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 import os
 
-
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 
-
-
-# Déterminer le chemin des fichiers JSON
-app_path = os.path.dirname(os.path.abspath(__file__))
-json_file_path = os.path.join(app_path, "data.json")
-
-# Chargement des données initiales
-data = {
-    "enfants": [],
-    "visites": {}
-}
-try:
-    with open(json_file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-except FileNotFoundError:
-    print("Fichier JSON non trouvé, initialisation avec données vides.")
-
-def convert_dates(data_list):
-    if isinstance(data_list, dict):
-        for child_visits in data_list.values():
-            for visit in child_visits:
-                if "visit_date" in visit:
-                    visit["visit_date"] = datetime.strptime(visit["visit_date"], "%Y-%m-%d").date()
-    elif isinstance(data_list, list):
-        for item in data_list:
-            if "birth_date" in item:
-                item["birth_date"] = datetime.strptime(item["birth_date"], "%Y-%m-%d").date()
-    return data_list
-
-def convert_to_string(data_list):
-    if isinstance(data_list, dict):
-        for child_visits in data_list.values():
-            for visit in child_visits:
-                if "visit_date" in visit:
-                    visit["visit_date"] = visit["visit_date"].strftime("%Y-%m-%d")
-    elif isinstance(data_list, list):
-        for item in data_list:
-            if "birth_date" in item:
-                item["birth_date"] = item["birth_date"].strftime("%Y-%m-%d")
-    return data_list
+# Les données ne seront plus stockées, donc nous supprimons la partie liée au fichier JSON
 
 # Routes Flask
 @app.route('/')
 def splash():
     return render_template('splash.html')
-    
+
 @app.route('/index')
 def index():
     return render_template('index.html')
 
-@app.route('/api/enfants', methods=['GET'])
-def get_enfants():
-    return jsonify(data['enfants'])
+@app.route('/mon_blog')
+def mon_blog():
+    return redirect('https://unpediatre.wordpress.com/')
 
-@app.route('/api/ajouter_enfant', methods=['POST'])
-def ajouter_enfant():
-    enfant = request.json
-    try:
-        birth_date = datetime.strptime(enfant['birth_date'], "%d/%m/%Y").date()
-        enfant['birth_date'] = birth_date.isoformat()
-        data['enfants'].append(enfant)
-        save_data()
-        return jsonify({"status": "succès", "message": "Enfant ajouté avec succès"}), 201
-    except ValueError:
-        return jsonify({"status": "erreur", "message": "Format de date invalide"}), 400
-
-@app.route('/api/supprimer_enfant/<nom>', methods=['DELETE'])
-def supprimer_enfant(nom):
-    global data
-    data['enfants'] = [enfant for enfant in data['enfants'] if enfant["name"] != nom]
-    if nom in data['visites']:
-        del data['visites'][nom]
-    save_data()
-    return jsonify({"status": "succès", "message": f"L'enfant {nom} a été supprimé."}), 200
+@app.route('/enter_birth_date', methods=['GET', 'POST'])
+def enter_birth_date():
+    if request.method == 'POST':
+        birth_date_str = request.form.get('birth_date')
+        try:
+            birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
+            # Redirection vers la page de détails avec la date de naissance
+            return redirect(url_for('child_details', birth_date=birth_date_str))
+        except ValueError:
+            return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
+    return render_template('enter_birth_date.html')
 
 @app.route('/child_details')
 def child_details():
-    name = request.args.get('name')
-    if name:
-        # Chercher l'enfant par son nom dans la liste 'data'
-        child = next((c for c in data['enfants'] if c['name'] == name), None)
-        if child:
-            # Convertir la date de naissance en objet date pour le calcul d'âge
-            birth_date = datetime.strptime(child['birth_date'], "%Y-%m-%d").date()
-            
-            # Utiliser date.today() correctement
+    birth_date_str = request.args.get('birth_date')
+    if birth_date_str:
+        try:
+            birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
             today = date.today()
             age = relativedelta(today, birth_date)
-            
-            # Calculer l'âge en mois et années
             age_in_months = age.months + age.years * 12
             
-            # Rechercher le prochain vaccin
             next_vaccine = get_next_vaccine(age_in_months)
             if next_vaccine:
                 if next_vaccine["age"] > 24:
@@ -107,50 +49,55 @@ def child_details():
                 else:
                     next_vaccine['display_age'] = f"{next_vaccine['age']} mois"
             
+            diversification_info = get_diversification(age_in_months)
+            
             return render_template('child_details.html', 
-                                   name=name, 
-                                   birth_date=child['birth_date'], 
+                                   birth_date=birth_date_str, 
                                    age=f"{age.years} ans et {age.months} mois", 
-                                   next_vaccine=next_vaccine)
-        else:
-            return "Enfant non trouvé", 404
+                                   next_vaccine=next_vaccine,
+                                   diversification_info=diversification_info)
+        except ValueError:
+            return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
     else:
-        return "Aucun nom d'enfant fourni", 400
-    
-@app.route('/api/ajouter_visite', methods=['POST'])
-def ajouter_visite():
-    visite = request.json
-    selected_child_name = visite['child_name']
-    if selected_child_name not in data['visites']:
-        data['visites'][selected_child_name] = []
-    
-    try:
-        visit_date = datetime.strptime(visite['visit_date'], "%d/%m/%Y").date()
-        data['visites'][selected_child_name].append({
-            "visit_date": visit_date.isoformat(),
-            "note": visite['note']
-        })
-        save_data()
-        return jsonify({"status": "succès", "message": "Visite ajoutée avec succès"}), 201
-    except ValueError:
-        return jsonify({"status": "erreur", "message": "Format de date invalide"}), 400
+        return "Aucune date de naissance fournie", 400
+
+# Les fonctions pour obtenir le prochain vaccin et les informations sur la diversification alimentaire
+def get_next_vaccine(age_in_months):
+    # Exemple de calendrier vaccinal Tunisien simplifié
+    vaccines = [
+        {"age": 2, "name": "BCG"},
+        {"age": 3, "name": "DTP"},
+        {"age": 4, "name": "Polio"},
+        {"age": 6, "name": "Pentavalent"},
+        {"age": 12, "name": "Rougeole"},
+        {"age": 18, "name": "DTP rappel"},
+        {"age": 24, "name": "Polio rappel"},
+        # Ajoutez d'autres vaccins selon le calendrier tunisien
+    ]
+    for vaccine in vaccines:
+        if age_in_months < vaccine["age"]:
+            return vaccine
+    return None
 
 
-@app.route('/visites/<nom>')
-def afficher_visites(nom):
-    if nom in data['visites']:
-        return render_template('visites.html', nom=nom, visites=data['visites'][nom])
-    return "Aucune visite trouvée pour cet enfant", 404
-
-
-@app.route('/api/diversification/<nom>', methods=['GET'])
-def get_diversification(nom):
-    enfant = next((e for e in data['enfants'] if e['name'] == nom), None)
-    if enfant:
-        birth_date = datetime.strptime(enfant['birth_date'], "%Y-%m-%d").date()
-        age_in_months = relativedelta(date.today(), birth_date).months + relativedelta(date.today(), birth_date).years * 12
-        return jsonify({"details": get_diversification_details(age_in_months)})
-    return jsonify({"status": "erreur", "message": "Enfant non trouvé"}), 404
+@app.route('/diversification_alimentaire')
+def diversification_alimentaire():
+    birth_date_str = request.args.get('birth_date')
+    if birth_date_str:
+        try:
+            birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
+            today = date.today()
+            age = relativedelta(today, birth_date)
+            age_in_months = age.months + age.years * 12
+            diversification_info = get_diversification_details(age_in_months)
+            return render_template('diversification.html', 
+                                   birth_date=birth_date_str, 
+                                   age=f"{age.years} ans et {age.months} mois", 
+                                   diversification_info=diversification_info)
+        except ValueError:
+            return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
+    else:
+        return "Aucune date de naissance fournie", 400
 
 def get_diversification_details(age_in_months):
     if age_in_months < 4:
@@ -208,30 +155,41 @@ Quantité de protéines:
         return "Plat familial."
     else:
         return "Âge non valide pour la diversification alimentaire."
-
-@app.route('/vaccine_schedule')
+@app.route('/calendrier_vaccinal')
 def vaccine_schedule():
     return render_template('vaccine_schedule.html')
 
-@app.route('/about')
+@app.route('/a_propos')
 def about():
     return render_template('about.html')
 
-@app.route('/api/prochain_vaccin/<nom>', methods=['GET'])
-def get_prochain_vaccin(nom):
-    enfant = next((e for e in data['enfants'] if e['name'] == nom), None)
-    if enfant:
-        birth_date = datetime.strptime(enfant['birth_date'], "%Y-%m-%d").date()
-        age_in_months = relativedelta(date.today(), birth_date).months + relativedelta(date.today(), birth_date).years * 12
-        next_vaccine = get_next_vaccine(age_in_months)
-        if next_vaccine:
-            if next_vaccine["age"] > 24:
-                age_display = f"{next_vaccine['age'] // 12} ans"
-            else:
-                age_display = f"{next_vaccine['age']} mois"
-            return jsonify({"vaccin": f"{next_vaccine['vaccine']} à {age_display}"})
-        return jsonify({"message": "Aucun vaccin supplémentaire n'est requis selon le calendrier actuel."})
-    return jsonify({"status": "erreur", "message": "Enfant non trouvé"}), 404
+@app.route('/prochain_vaccin')
+def get_prochain_vaccin():
+    birth_date_str = request.args.get('birth_date')
+    if birth_date_str:
+        try:
+            birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
+            today = date.today()
+            age = relativedelta(today, birth_date)
+            age_in_months = age.months + age.years * 12
+            next_vaccine = get_next_vaccine(age_in_months)
+            if next_vaccine:
+                if next_vaccine["age"] > 24:
+                    age_display = f"{next_vaccine['age'] // 12} ans"
+                else:
+                    age_display = f"{next_vaccine['age']} mois"
+                return render_template('prochain_vaccin.html', 
+                                       birth_date=birth_date_str, 
+                                       age=f"{age.years} ans et {age.months} mois", 
+                                       next_vaccine={"name": next_vaccine['vaccine'], "display_age": age_display})
+            return render_template('prochain_vaccin.html', 
+                                   birth_date=birth_date_str, 
+                                   age=f"{age.years} ans et {age.months} mois", 
+                                   next_vaccine={"name": "Aucun vaccin supplémentaire n'est requis selon le calendrier actuel.", "display_age": ""})
+        except ValueError:
+            return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
+    else:
+        return "Aucune date de naissance fournie", 400
 
 def get_next_vaccine(age_in_months):
     vaccine_schedule = [
@@ -254,10 +212,7 @@ def get_next_vaccine(age_in_months):
             return vaccine
     return None
 
-def save_data():
-    with open(json_file_path, "w", encoding="utf-8") as f:
-        json.dump(convert_to_string(data), f, indent=4)
+# La fonction save_data n'est plus nécessaire car nous ne stockons plus les données des utilisateurs
 
 if __name__ == "__main__":
     app.run(debug=True)
-

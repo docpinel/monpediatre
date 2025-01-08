@@ -19,19 +19,31 @@
      <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails de l'enfant - Mon Pédiatre</title>
+    <title>Détails de l'enfant - Mon Pédiatre Lite</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Détails de l'enfant</h1>
-    <div id="child-details">
-        <p id="child-name">{{ name }}</p>
-        <p id="child-birthdate">Date de naissance : {{ birth_date }}</p>
-        <p id="child-age">Âge : {{ age }}</p>
-        <p id="next-vaccine">Prochain vaccin : {% if next_vaccine %} {{ next_vaccine.vaccine }} à {{ next_vaccine.display_age }} {% else %} Aucun {% endif %}</p>
-    </div>
-    <div id="actions">
-        <button onclick="window.location.href='/index'">Retour</button>
+    <div class="container">
+        <h1>Détails de l'enfant</h1>
+        <div id="child-details">
+            <p id="child-birthdate">Date de naissance : {{ birth_date }}</p>
+            <p id="child-age">Âge : {{ age }}</p>
+            <div id="vaccine-info">
+                <h2>Prochain Vaccin</h2>
+                <p id="next-vaccine">{% if next_vaccine %} Le prochain vaccin recommandé est le <strong>{{ next_vaccine.name }}</strong> à {{ next_vaccine.display_age }}. {% else %} Aucun vaccin supplémentaire n'est requis selon le calendrier actuel. {% endif %}</p>
+            </div>
+            <div id="diversification-info">
+                <h2>Diversification Alimentaire</h2>
+                <p>{{ diversification_info }}</p>
+            </div>
+        </div>
+        <div id="actions">
+            <button onclick="window.location.href='/enter_birth_date'" class="btn">Entrer une autre date de naissance</button>
+            <button onclick="window.location.href='/diversification_alimentaire?birth_date={{ birth_date }}'" class="btn">Diversification Alimentaire</button>
+            <button onclick="window.location.href='/prochain_vaccin?birth_date={{ birth_date }}'" class="btn">Prochain Vaccin</button>
+            <button onclick="window.location.href='/calendrier_vaccinal'" class="btn">Calendrier Vaccinal</button>
+            <button onclick="window.location.href='/index'" class="btn">Retour</button>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

@@ -19,37 +19,23 @@
      <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Pédiatre</title>
+    <title>Mon Pédiatre Lite</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Bienvenue dans Mon Pédiatre</h1>
-    <p>Développé par Dr Mhiri Kais</p>
-    <button onclick="openBlog()" style="background-color: red; color: white;">✍️Mon Blog✍️</button>    </div>
-    <script>
-        function openBlog() {
-            window.open('https://unpediatre.wordpress.com/', '_blank');
-        }
-    </script>
+    <div class="container">
+        <h1>Bienvenue dans Mon Pédiatre Lite</h1>
+        <p>Développé par Dr Mhiri Kais</p>
+        
+        <div id="actions">
+            <button id="blogButton" class="btn" style="background-color: red; color: white;">✍️Mon Blog✍️</button>
+            <button id="vaccineScheduleBtn" class="btn">💉Calendrier vaccinal Tunisien💉</button>
+            <button id="nextVaccineBtn" class="btn">⏭️Prochain Vaccin⏭️</button>
+            <button id="diversificationBtn" class="btn">🥗Diversification Alimentaire🥗</button>
+            <button id="aboutBtn" class="btn">🇹🇳À propos🇹🇳</button>
+
+        </div>
     </div>
-    <div id="children-list">
-        <h2>Liste des enfants</h2>
-        <ul id="children">
-        </ul>
-        <button onclick="addChild()">👶Ajouter un enfant👶</button>
-        <button onclick="deleteChild()">❌ Supprimer un enfant❌ </button> <!-- Nouveau bouton -->
-    
-
-    <div id="actions">
-        <button onclick="showChildDetails()">ℹ️Détails de l'enfantℹ️</button>
-        <button onclick="showDiversification()">🥗Diversification Alimentaire🥗</button>
-        <button onclick="addVisit()">📅Ajouter une visite📅</button>
-        <button onclick="showVisits()">📋Afficher les visites📋</button>
-        <button onclick="showVaccine()">💉Calendrier vaccinal💉</button>
-        <button onclick="showNextVaccine()">⏭️Prochain Vaccin⏭️</button>
-        <button onclick="showAbout()">🇹🇳À propos🇹🇳</button>
-    
-
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
