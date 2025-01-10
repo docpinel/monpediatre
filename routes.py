@@ -33,27 +33,40 @@ def enter_birth_date():
     return render_template('enter_birth_date.html')
 
 @app.route('/child_details')
+def calculate_age(birth_date):
+    today = date.today()
+    age = relativedelta(today, birth_date)
+    
+    # Si la date de naissance est dans le futur, on ajuste à 0
+    if age.years < 0:
+        return "0 ans, 0 mois et 0 jours"
+    
+    # Calcul de l'âge en ans, mois et jours
+    years = age.years
+    months = age.months
+    days = age.days
+    
+    # Formatage de l'affichage
+    return f"{years} ans, {months} mois et {days} jours"
+def get_age_in_months(birth_date):
+    today = date.today()
+    age = relativedelta(today, birth_date)
+    return age.months + age.years * 12
+
 def child_details():
     birth_date_str = request.args.get('birth_date')
     if birth_date_str:
         try:
             birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
-            today = date.today()
-            age = relativedelta(today, birth_date)
-            age_in_months = age.months + age.years * 12
+            age_display = calculate_age(birth_date)
+            age_in_months = get_age_in_months(birth_date)
             
             next_vaccine = get_next_vaccine(age_in_months)
-            if next_vaccine:
-                if next_vaccine["age"] > 24:
-                    next_vaccine['display_age'] = f"{next_vaccine['age'] // 12} ans"
-                else:
-                    next_vaccine['display_age'] = f"{next_vaccine['age']} mois"
-            
-            diversification_info = get_diversification(age_in_months)
+            diversification_info = get_diversification_details(age_in_months)
             
             return render_template('child_details.html', 
                                    birth_date=birth_date_str, 
-                                   age=f"{age.years} ans et {age.months} mois", 
+                                   age=age_display, 
                                    next_vaccine=next_vaccine,
                                    diversification_info=diversification_info)
         except ValueError:
@@ -61,23 +74,7 @@ def child_details():
     else:
         return "Aucune date de naissance fournie", 400
 
-# Les fonctions pour obtenir le prochain vaccin et les informations sur la diversification alimentaire
-def get_next_vaccine(age_in_months):
-    # Exemple de calendrier vaccinal Tunisien simplifié
-    vaccines = [
-        {"age": 2, "name": "BCG"},
-        {"age": 3, "name": "DTP"},
-        {"age": 4, "name": "Polio"},
-        {"age": 6, "name": "Pentavalent"},
-        {"age": 12, "name": "Rougeole"},
-        {"age": 18, "name": "DTP rappel"},
-        {"age": 24, "name": "Polio rappel"},
-        # Ajoutez d'autres vaccins selon le calendrier tunisien
-    ]
-    for vaccine in vaccines:
-        if age_in_months < vaccine["age"]:
-            return vaccine
-    return None
+
 
 
 @app.route('/diversification_alimentaire')
@@ -86,19 +83,19 @@ def diversification_alimentaire():
     if birth_date_str:
         try:
             birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
-            today = date.today()
-            age = relativedelta(today, birth_date)
-            age_in_months = age.months + age.years * 12
+            age_display = calculate_age(birth_date)
+            age_in_months = get_age_in_months(birth_date)
+            
             diversification_info = get_diversification_details(age_in_months)
+            
             return render_template('diversification.html', 
                                    birth_date=birth_date_str, 
-                                   age=f"{age.years} ans et {age.months} mois", 
+                                   age=age_display, 
                                    diversification_info=diversification_info)
         except ValueError:
             return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
     else:
         return "Aucune date de naissance fournie", 400
-
 def get_diversification_details(age_in_months):
     if age_in_months < 4:
         return "L'alimentation est exclusivement lactée."
@@ -169,23 +166,15 @@ def get_prochain_vaccin():
     if birth_date_str:
         try:
             birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
-            today = date.today()
-            age = relativedelta(today, birth_date)
-            age_in_months = age.months + age.years * 12
+            age_display = calculate_age(birth_date)
+            age_in_months = get_age_in_months(birth_date)
+            
             next_vaccine = get_next_vaccine(age_in_months)
-            if next_vaccine:
-                if next_vaccine["age"] > 24:
-                    age_display = f"{next_vaccine['age'] // 12} ans"
-                else:
-                    age_display = f"{next_vaccine['age']} mois"
-                return render_template('prochain_vaccin.html', 
-                                       birth_date=birth_date_str, 
-                                       age=f"{age.years} ans et {age.months} mois", 
-                                       next_vaccine={"name": next_vaccine['vaccine'], "display_age": age_display})
+            
             return render_template('prochain_vaccin.html', 
                                    birth_date=birth_date_str, 
-                                   age=f"{age.years} ans et {age.months} mois", 
-                                   next_vaccine={"name": "Aucun vaccin supplémentaire n'est requis selon le calendrier actuel.", "display_age": ""})
+                                   age=age_display,
+                                   next_vaccine=next_vaccine)
         except ValueError:
             return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
     else:
@@ -201,16 +190,20 @@ def get_next_vaccine(age_in_months):
         {"age": 11, "vaccine": "Vaccin anti-pneumococcique troisième dose"},
         {"age": 12, "vaccine": "Vaccin contre la rougeole et la rubéole + Vaccin contre l'hépatite A"},
         {"age": 18, "vaccine": "Vaccin contre la diphtérie, le tétanos et la coqueluche + Vaccin polio oral + Vaccin contre la rougeole et la rubéole"},
-        {"age": 72, "vaccine": "Vaccin polio oral + Vaccin contre l'hépatite A"},
-        {"age": 84, "vaccine": "Vaccin contre la diphtérie et le tétanos"},
+        {"age": 72, "vaccine": "Vaccin contre la diphtérie, le tétanos, la coqueluche et la poliomyélite + Vaccin contre l'hépatite A"},
         {"age": 144, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral"},
         {"age": 216, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral"}
     ]
     
     for vaccine in vaccine_schedule:
         if age_in_months < vaccine['age']:
-            return vaccine
-    return None
+            # Ajout de display_age pour chaque vaccin
+            display_age = f"{vaccine['age']} mois" if vaccine['age'] <= 24 else f"{vaccine['age'] // 12} ans"
+            return {"name": vaccine['vaccine'], "age": vaccine['age'], "display_age": display_age}
+    
+    
+    # Si l'enfant est plus âgé que le dernier vaccin du calendrier
+    return {"name": "Aucun vaccin supplémentaire n'est requis selon le calendrier actuel.", "age": None}
 
 # La fonction save_data n'est plus nécessaire car nous ne stockons plus les données des utilisateurs
 

@@ -30,10 +30,10 @@
         
         <div class="info-box">
             <h2>Prochain Vaccin Recommandé</h2>
-            {% if next_vaccine.name %}
+            {% if next_vaccine and next_vaccine.name %}
                 <p>Le prochain vaccin recommandé est le <strong>{{ next_vaccine.name }}</strong> à {{ next_vaccine.display_age }}.</p>
             {% else %}
-                <p>{{ next_vaccine.name }}</p>
+                <p>Aucun vaccin supplémentaire n'est requis selon le calendrier actuel.</p>
             {% endif %}
         </div>
         
