@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Fonction pour afficher la diversification alimentaire
     function showDiversification() {
-        const birthDate = prompt("Entrez la date de naissance de l'enfant (jj/mm/aaaa) :");
+        var datePicker = document.getElementById('birthDatePicker');
+        var birthDate = datePicker.value;
         if (birthDate) {
             window.location.href = '/diversification_alimentaire?birth_date=' + encodeURIComponent(birthDate);
         } else {
-            alert("Veuillez entrer une date de naissance valide.");
+            alert("Veuillez sélectionner une date de naissance valide.");
         }
     }
 
@@ -16,11 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fonction pour montrer le prochain vaccin
     function showNextVaccine() {
-        const birthDate = prompt("Entrez la date de naissance de l'enfant (jj/mm/aaaa) :");
+        var datePicker = document.getElementById('birthDatePicker');
+        var birthDate = datePicker.value;
         if (birthDate) {
             window.location.href = '/prochain_vaccin?birth_date=' + encodeURIComponent(birthDate);
         } else {
-            alert("Veuillez entrer une date de naissance valide.");
+            alert("Veuillez sélectionner une date de naissance valide.");
         }
     }
 

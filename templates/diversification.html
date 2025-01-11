@@ -5,38 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diversification Alimentaire - Mon Pédiatre Lite</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .info-box {
-            background-color: #fff;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .info-box h2 {
-            color: #3498db;
-            margin-bottom: 15px;
-        }
-        .info-box p {
-            line-height: 1.6;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <div class="container">
         <h1>Diversification Alimentaire</h1>
-        <p>Date de naissance de l'enfant : {{ birth_date }}</p>
-        <p>Âge de l'enfant : {{ age }}</p>
         
-        <div class="info-box">
-            <h2>Recommandations Alimentaires</h2>
-            <p>{{ diversification_info }}</p>
+        <!-- Champ pour sélectionner la date de naissance avec Flatpickr -->
+        <div>
+            <label for="birthDatePicker">Date de naissance de l'enfant :</label>
+            <input type="text" id="birthDatePicker" placeholder="Sélectionnez la date de naissance">
         </div>
+        
+        {% if birth_date %}
+            <p>Date de naissance de l'enfant : {{ birth_date }}</p>
+            <p>Âge de l'enfant : {{ age }}</p>
+            
+            <div class="info-box">
+                <h2>Recommandations Alimentaires</h2>
+                <p>{{ diversification_info }}</p>
+            </div>
+        {% endif %}
         
         <div id="actions">
             <button onclick="window.location.href='/index'" class="btn">Retour</button>
-            <button onclick="window.location.href='/prochain_vaccin?birth_date={{ birth_date }}'" class="btn">Prochain Vaccin</button>
+            <button onclick="submitDate()" class="btn">Voir les Recommandations</button>
+            <button onclick="window.location.href='/prochain_vaccin?birth_date=' + document.getElementById('birthDatePicker').value" class="btn">Prochain Vaccin</button>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#birthDatePicker", {
+            dateFormat: "d/m/Y",
+            maxDate: "today",
+            placeholder: "Sélectionnez la date de naissance",
+            locale: {
+                firstDayOfWeek: 1,
+                weekdays: {
+                    shorthand: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+                    longhand: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                },
+                months: {
+                    shorthand: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    longhand: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                },
+            }
+        });
+        
+        function submitDate() {
+            var datePicker = document.getElementById('birthDatePicker');
+            var birthDate = datePicker.value;
+            if (birthDate) {
+                window.location.href = '/diversification_alimentaire?birth_date=' + encodeURIComponent(birthDate);
+            } else {
+                alert('Veuillez sélectionner une date de naissance.');
+            }
+        }
+    </script>
 </body>
 </html>

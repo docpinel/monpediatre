@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-     <!-- Favicon pour les navigateurs de bureau -->
-     <link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Favicon pour les navigateurs de bureau -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico') }}">
     
-     <!-- Icône pour les appareils Apple -->
-     <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
-     
-     <!-- Pour d'autres tailles d'icônes (optionnel, mais recommandé pour la compatibilité mobile) -->
-     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon-32x32.png') }}">
-     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon-16x16.png') }}">
-     
-     <!-- Pour Windows -->
-     <meta name="msapplication-TileColor" content="#da532c">
-     <meta name="msapplication-TileImage" content="{{ url_for('static', filename='icons/ms-icon-144x144.png') }}">
+    <!-- Icône pour les appareils Apple -->
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    
+    <!-- Pour d'autres tailles d'icônes (optionnel, mais recommandé pour la compatibilité mobile) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon-16x16.png') }}">
+    
+    <!-- Pour Windows -->
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="{{ url_for('static', filename='icons/ms-icon-144x144.png') }}">
  
-     <!-- Pour Android -->
-     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <!-- Pour Android -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Pédiatre Lite</title>
@@ -27,15 +28,59 @@
         <h1>Bienvenue dans Mon Pédiatre Lite</h1>
         <p>Développé par Dr Mhiri Kais</p>
         
+        <!-- Champ pour sélectionner la date de naissance avec Flatpickr -->
+        <div>
+            <label for="birthDatePicker">Entrez la date de naissance de l'enfant :</label>
+            <input type="text" id="birthDatePicker" placeholder="Sélectionnez la date de naissance">
+        </div>
+        
         <div id="actions">
             <button id="blogButton" class="btn" style="background-color: red; color: white;">✍️Mon Blog✍️</button>
             <button id="vaccineScheduleBtn" class="btn">💉Calendrier vaccinal Tunisien💉</button>
-            <button id="nextVaccineBtn" class="btn">⏭️Prochain Vaccin⏭️</button>
-            <button id="diversificationBtn" class="btn">🥗Diversification Alimentaire🥗</button>
+            <button id="nextVaccineBtn" class="btn" onclick="goToProchainVaccin()">⏭️Prochain Vaccin⏭️</button>
+            <button id="diversificationBtn" class="btn" onclick="goToDiversification()">🥗Diversification Alimentaire🥗</button>
             <button id="aboutBtn" class="btn">🇹🇳À propos🇹🇳</button>
-
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#birthDatePicker", {
+            dateFormat: "d/m/Y",
+            maxDate: "today",
+            placeholder: "Sélectionnez la date de naissance",
+            locale: {
+                firstDayOfWeek: 1,
+                weekdays: {
+                    shorthand: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+                    longhand: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                },
+                months: {
+                    shorthand: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    longhand: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                },
+            }
+        });
+        
+        function goToProchainVaccin() {
+            var datePicker = document.getElementById('birthDatePicker');
+            var birthDate = datePicker.value;
+            if (birthDate) {
+                window.location.href = '/prochain_vaccin?birth_date=' + encodeURIComponent(birthDate);
+            } else {
+                alert('Veuillez sélectionner une date de naissance.');
+            }
+        }
+        
+        function goToDiversification() {
+            var datePicker = document.getElementById('birthDatePicker');
+            var birthDate = datePicker.value;
+            if (birthDate) {
+                window.location.href = '/diversification_alimentaire?birth_date=' + encodeURIComponent(birthDate);
+            } else {
+                alert('Veuillez sélectionner une date de naissance.');
+            }
+        }
+    </script>
 </body>
 </html>

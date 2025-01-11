@@ -169,18 +169,23 @@ def get_prochain_vaccin():
             age_display = calculate_age(birth_date)
             age_in_months = get_age_in_months(birth_date)
             
-            next_vaccine = get_next_vaccine(age_in_months)
+            vaccine_history, next_vaccine = get_vaccine_history_and_next(age_in_months)
             
             return render_template('prochain_vaccin.html', 
                                    birth_date=birth_date_str, 
                                    age=age_display,
+                                   vaccine_history=vaccine_history,
                                    next_vaccine=next_vaccine)
         except ValueError:
             return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
     else:
-        return "Aucune date de naissance fournie", 400
+        return render_template('prochain_vaccin.html', 
+                               birth_date=None, 
+                               age=None,
+                               vaccine_history=None,
+                               next_vaccine=None)
 
-def get_next_vaccine(age_in_months):
+def get_vaccine_history_and_next(age_in_months):
     vaccine_schedule = [
         {"age": 0, "vaccine": "BCG, Vaccin de l'hépatite B"},
         {"age": 2, "vaccine": "Pentavalent + Vaccin polio injectable + vaccin anti-pneumococcique"},
@@ -195,15 +200,30 @@ def get_next_vaccine(age_in_months):
         {"age": 216, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral"}
     ]
     
+    history = []
+    next_vaccine = None
+    
     for vaccine in vaccine_schedule:
-        if age_in_months < vaccine['age']:
-            # Ajout de display_age pour chaque vaccin
-            display_age = f"{vaccine['age']} mois" if vaccine['age'] <= 24 else f"{vaccine['age'] // 12} ans"
-            return {"name": vaccine['vaccine'], "age": vaccine['age'], "display_age": display_age}
+        if age_in_months >= vaccine['age']:
+            history.append({"name": vaccine['vaccine'], "age": vaccine['age']})
+        else:
+            next_vaccine = {"name": vaccine['vaccine'], "age": vaccine['age']}
+            break
     
+    # Formatage de l'âge pour l'affichage
+    for item in history:
+        if item['age'] > 24:
+            item['display_age'] = f"{item['age'] // 12} ans"
+        else:
+            item['display_age'] = f"{item['age']} mois"
     
-    # Si l'enfant est plus âgé que le dernier vaccin du calendrier
-    return {"name": "Aucun vaccin supplémentaire n'est requis selon le calendrier actuel.", "age": None}
+    if next_vaccine:
+        if next_vaccine['age'] > 24:
+            next_vaccine['display_age'] = f"{next_vaccine['age'] // 12} ans"
+        else:
+            next_vaccine['display_age'] = f"{next_vaccine['age']} mois"
+    
+    return history, next_vaccine
 
 # La fonction save_data n'est plus nécessaire car nous ne stockons plus les données des utilisateurs
 
