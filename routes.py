@@ -9,12 +9,9 @@ app = Flask(__name__, static_url_path='/static', static_folder='static')
 
 # Routes Flask
 @app.route('/')
-
-@app.route('/')
-def splash_screen():
-    # Simule un splash screen, puis redirige vers la sélection de langue
-    return redirect(url_for('language_selection'))
-
+def splash():
+    return render_template('splash.html')
+    
 @app.route('/language_selection')
 def language_selection():
     return render_template('language_selection.html')
