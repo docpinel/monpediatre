@@ -122,4 +122,6 @@ button:active {
     #actions {
         grid-template-columns: 1fr; /* Single column layout for mobile */
     }
+    
+    
 }
