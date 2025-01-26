@@ -1,45 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Fonction pour afficher la diversification alimentaire
-    function showDiversification() {
-        var datePicker = document.getElementById('birthDatePicker');
-        var birthDate = datePicker.value;
-        if (birthDate) {
-            window.location.href = '/diversification_alimentaire?birth_date=' + encodeURIComponent(birthDate);
-        } else {
-            alert("Veuillez sélectionner une date de naissance valide.");
+    // Fonction générique pour demander les initiales et naviguer
+    function requestChildAction(routeName) {
+        const initials = prompt("Veuillez entrer les initiales de l'enfant :");
+        if (initials) {
+            // Utiliser encodeURIComponent pour gérer les caractères spéciaux
+            window.location.href = `/${routeName}/${encodeURIComponent(initials)}`;
         }
     }
 
-    // Fonction pour afficher le calendrier vaccinal
-    function showVaccineSchedule() {
-        window.location.href = "/calendrier_vaccinal";
-    }
-
-    // Fonction pour montrer le prochain vaccin
-    function showNextVaccine() {
-        var datePicker = document.getElementById('birthDatePicker');
-        var birthDate = datePicker.value;
-        if (birthDate) {
-            window.location.href = '/prochain_vaccin?birth_date=' + encodeURIComponent(birthDate);
-        } else {
-            alert("Veuillez sélectionner une date de naissance valide.");
+    // Attacher les fonctions aux boutons dans l'index
+   
+  
+    document.getElementById('deleteChildBtn')?.addEventListener('click', function() {
+        const initials = prompt("Veuillez entrer les initiales de l'enfant à supprimer :");
+        if (initials && confirm("Êtes-vous sûr de vouloir supprimer cet enfant ?")) {
+            window.location.href = `/delete_child/${encodeURIComponent(initials)}`;
         }
-    }
+    });
 
-    // Fonction pour afficher les informations "À propos"
-    function showAbout() {
-        window.location.href = "/a_propos";
-    }
+    document.getElementById('diversificationBtn')?.addEventListener('click', function() {
+        requestChildAction('diversification_alimentaire');
+    });
+    document.getElementById('nextVaccineBtn')?.addEventListener('click', function() {
+        requestChildAction('prochain_vaccin');
+    });
+   
 
-    // Fonction pour ouvrir le blog
-    function openBlog() {
-        window.open('https://unpediatre.wordpress.com/', '_blank');
-    }
-
-    // Attacher les fonctions aux boutons existants
-    document.getElementById('diversificationBtn').addEventListener('click', showDiversification);
-    document.getElementById('vaccineScheduleBtn').addEventListener('click', showVaccineSchedule);
-    document.getElementById('nextVaccineBtn').addEventListener('click', showNextVaccine);
-    document.getElementById('aboutBtn').addEventListener('click', showAbout);
-    document.getElementById('blogButton').addEventListener('click', openBlog);
+    // Boutons pour les utilisateurs non connectés
+    document.getElementById('loginBtn')?.addEventListener('click', function() {
+        window.location.href = "{{ url_for('login') }}";
+    });
+    document.getElementById('registerBtn')?.addEventListener('click', function() {
+        window.location.href = "{{ url_for('register') }}";
+    });
 });

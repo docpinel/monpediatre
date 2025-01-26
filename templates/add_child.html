@@ -3,31 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diversification Alimentaire - Mon Pédiatre Lite</title>
+    <title>Ajouter un Enfant - Mon Pédiatre Lite</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>Diversification Alimentaire pour {{ initials }}</h1>
-        
-      
-        
-        {% if birth_date %}
-            <p>Date de naissance de l'enfant : {{ birth_date }}</p>
-            <p>Âge de l'enfant : {{ age }}</p>
-            
-            <div class="info-box">
-                <h2>Recommandations Alimentaires</h2>
-                <p>{{ diversification_info }}</p>
+        <h1>Ajouter un Enfant</h1>
+        <form action="{{ url_for('add_child') }}" method="post">
+            <div>
+                <label for="childInitials">Initiales de l'enfant :</label>
+                <input type="text" id="childInitials" name="child_initials" placeholder="Ex: JM" required>
             </div>
-        {% endif %}
-        
-        <div id="actions">
-            <button onclick="window.location.href='/index'" class="btn">Retour</button>
-        </div>
+            <div>
+                <label for="birthDatePicker">Date de naissance de l'enfant :</label>
+                <input type="text" id="birthDatePicker" name="birth_date" placeholder="Sélectionnez la date de naissance" required>
+            </div>
+            <button type="submit" class="btn">Ajouter l'enfant</button>
+        </form>
+        <button onclick="window.location.href='/index'" class="btn">Retour</button>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         flatpickr("#birthDatePicker", {
@@ -46,16 +41,6 @@
                 },
             }
         });
-        
-        function submitDate() {
-            var datePicker = document.getElementById('birthDatePicker');
-            var birthDate = datePicker.value;
-            if (birthDate) {
-                window.location.href = `/diversification_alimentaire/{{ initials }}?birth_date=` + encodeURIComponent(birthDate);
-            } else {
-                alert('Veuillez sélectionner une date de naissance.');
-            }
-        }
     </script>
 </body>
 </html>

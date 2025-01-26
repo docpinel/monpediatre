@@ -9,13 +9,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Prochain Vaccin</h1>
+        <h1>Prochain Vaccin pour {{ initials }}</h1>
         
-        <!-- Champ pour sélectionner la date de naissance avec Flatpickr -->
-        <div>
-            <label for="birthDatePicker">Date de naissance de l'enfant :</label>
-            <input type="text" id="birthDatePicker" placeholder="Sélectionnez la date de naissance">
-        </div>
+       
         
         {% if birth_date %}
             <p>Date de naissance de l'enfant : {{ birth_date }}</p>
@@ -72,7 +68,7 @@
             var datePicker = document.getElementById('birthDatePicker');
             var birthDate = datePicker.value;
             if (birthDate) {
-                window.location.href = '/prochain_vaccin?birth_date=' + encodeURIComponent(birthDate);
+                window.location.href = `/prochain_vaccin/{{ initials }}?birth_date=` + encodeURIComponent(birthDate);
             } else {
                 alert('Veuillez sélectionner une date de naissance.');
             }

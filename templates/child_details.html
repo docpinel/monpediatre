@@ -24,7 +24,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Détails de l'enfant</h1>
+        <h1>Détails de l'enfant - {{ initials }}</h1>
         <div id="child-details">
             <p id="child-birthdate">Date de naissance : {{ birth_date }}</p>
             <p id="child-age">Âge : {{ age }}</p>
@@ -39,8 +39,8 @@
         </div>
         <div id="actions">
             <button onclick="window.location.href='/enter_birth_date'" class="btn">Entrer une autre date de naissance</button>
-            <button onclick="window.location.href='/diversification_alimentaire?birth_date={{ birth_date }}'" class="btn">Diversification Alimentaire</button>
-            <button onclick="window.location.href='/prochain_vaccin?birth_date={{ birth_date }}'" class="btn">Prochain Vaccin</button>
+            <button onclick="window.location.href='/diversification_alimentaire/{{ initials }}?birth_date={{ birth_date }}'" class="btn">Diversification Alimentaire</button>
+            <button onclick="window.location.href='/prochain_vaccin/{{ initials }}?birth_date={{ birth_date }}'" class="btn">Prochain Vaccin</button>
             <button onclick="window.location.href='/calendrier_vaccinal'" class="btn">Calendrier Vaccinal</button>
             <button onclick="window.location.href='/index'" class="btn">Retour</button>
         </div>
