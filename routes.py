@@ -63,26 +63,6 @@ def register():
         return "Ce nom d'utilisateur existe déjà.", 400
     return render_template('register.html')
 
-@app.route('/')
-def splash():
-    if 'user' in session:
-        return redirect(url_for('index'))
-    return redirect(url_for('login'))
-
-# Suppression de la logique de gestion des enfants ici, car elle doit être dans une route ou une fonction de vue
-@app.route('/language_selection')
-def language_selection():
-    if 'user' in session:
-        return redirect(url_for('index'))
-    return render_template('language_selection.html')
-
-@app.route('/arabe')
-def arabe():
-    return render_template('arabe.html')
-
-@app.route('/francais')
-def francais():
-    return redirect(url_for('index'))
 
 
 @app.route('/index')
@@ -210,96 +190,7 @@ def get_age_in_months(birth_date):
     age = relativedelta(today, birth_date)
     return age.months + age.years * 12
 
-# Assurez-vous que ces fonctions existent et sont correctement définies:
-# get_next_vaccine(age_in_months)
-# get_diversification_details(age_in_months)
 
-@app.route('/diversification_alimentaire/<initials>', methods=['GET'])
-@login_required
-def diversification_alimentaire(initials):
-    data = load_data()
-    user_children = data['users'].get(session['user'], {}).get('children', [])
-    # Recherche insensible à la casse
-    child = next((c for c in user_children if c['initials'].lower() == initials.lower()), None)
-    
-    if not child:
-        return "Enfant non trouvé pour ces initiales.", 404
-    
-    # Utiliser la date de naissance de l'enfant si elle n'est pas fournie dans les paramètres
-    birth_date_str = request.args.get('birth_date', child['birth_date'])  # Si birth_date n'est pas dans les params, utilisez celle de l'enfant
-    if birth_date_str:
-        try:
-            birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
-            age_display = calculate_age(birth_date)
-            age_in_months = get_age_in_months(birth_date)
-            
-            diversification_info = get_diversification_details(age_in_months)
-            
-            return render_template('diversification.html', 
-                                   birth_date=birth_date_str, 
-                                   age=age_display, 
-                                   diversification_info=diversification_info,
-                                   initials=initials)
-        except ValueError:
-            return "Format de date invalide. Utilisez jj/mm/aaaa.", 400
-    else:
-        return "Aucune date de naissance trouvée pour cet enfant.", 400
-def get_diversification_details(age_in_months):
-    if age_in_months < 4:
-        return "L'alimentation est exclusivement lactée."
-    elif 4 <= age_in_months < 6:
-        return """- Matin : Apport lacté
-- Midi : Purée de légumes et pomme de terre (pomme de terre + carotte ou courgette ou blanc de poireau ou haricots verts ou potiron ou artichaut ou épinard)
-- Goûter : Apport lacté  
-- Soir : Apport lacté
-
-Introduction :
-- Lait maternel ou Biberon PPN
-- Des légumes, Des protéines animales, Des fruits, Du gluten
-- Quantité de lait par jour:
- à 5 mois : 850 mL (4 biberons d'environ 220 mL)
- Quantité de protéines:
- 5 mois : 5 g ou 1 cuillère à café
-"""
-
-    elif 6 <= age_in_months < 9:
-        return """- Matin : Apport lacté
-- Midi : Repas mixé (purée de légumes et pomme de terre maison ou petit pot de légumes environ 130 g + viande 10 g/jour (2 c à c) à 6 mois, 15 g (3 c à c) à 7 mois, 20 g (4 c à c) à 8 mois ou petit pot de légumes avec viande 130 g + 1 cuillère d'huile)
-- Goûter : Apport lacté + fruit 
-- Soir : Apport lacté
-Quantité de lait par jour:
-- 8 mois : 650 mL (3 biberons de 220 mL ou 1 biberon de 250 mL + 1 laitage)
-Quantité de protéines:
-- 8 mois : 20 g ou 4 cuillères à café ou 1/3 d'œuf
-"""
-
-    elif 9 <= age_in_months <= 12:
-        return """- Matin : Apport lacté
-- Midi : Repas mixé à la cuillère (purée de légumes maison ou petit pot de légumes 180 g à 200 g avec une noix de beurre ou 1 cuillère à soupe d'huile, poisson ou œuf dur : 20 g/jour (4 cuillères à café) ou petit pot de légumes avec viande 200-250 g et une cuillère à soupe d'huile)
-- Goûter : Apport lacté + fruit
-- Soir : Introduction du repas du soir (purée de légumes maison ou soupe épaisse avec petites pâtes ou petit pot de légumes environ 180 g avec une noix de beurre ou 1 cuillère à soupe d'huile)
-Quantité de lait par jour:
-- 12 mois : 500 mL (2 biberons de 250 mL ou 1 biberon de 250 mL + 2 laitages)
-Quantité de protéines:
-- 12 mois : 30 g ou 1/3 de steak haché ou 1/2 œuf
-"""
-    elif 12 < age_in_months <= 36:
-        return """- Matin : Apport lacté
-- Midi : Repas haché en morceaux (légumes + féculents avec une noisette de beurre ou 1 cuillère à soupe d'huile à varier (noix, colza, olive), viande, poisson (30 g/jour, soit 6 c à c) ou 1/2 œuf)
-- Goûter : Apport lacté + fruit
-- Soir : Repas à la cuillère (légumes + féculents avec une noisette de beurre ou 1 cuillère à soupe d'huile à varier (noix, colza, olive) + 1 fruit ou compote)
-
-Quantité de lait par jour:
-- 12 mois : 500 mL (2 biberons de 250 mL ou 1 biberon de 250 mL + 2 laitages)
-- 3 ans : 500 mL (idem)
-
-Quantité de protéines:
-- 12 mois : 30 g ou 1/3 de steak haché ou 1/2 œuf
-- 3 ans : 50 g ou 1 œuf"""
-    elif age_in_months > 36:
-        return "Plat familial."
-    else:
-        return "Âge non valide pour la diversification alimentaire."
 
 @app.route('/calendrier_vaccinal')
 def vaccine_schedule():
@@ -353,9 +244,8 @@ def get_next_vaccine(age_in_months):
         {"age": 11, "vaccine": "Vaccin anti-pneumococcique troisième dose"},
         {"age": 12, "vaccine": "Vaccin contre la rougeole et la rubéole + Vaccin contre l'hépatite A"},
         {"age": 18, "vaccine": "Vaccin contre la diphtérie, le tétanos et la coqueluche + Vaccin polio oral + Vaccin contre la rougeole et la rubéole"},
-        {"age": 72, "vaccine": "Vaccin polio oral + Vaccin contre l'hépatite A"},
-        {"age": 84, "vaccine": "Vaccin contre la diphtérie et le tétanos"},
-        {"age": 144, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral"},
+        {"age": 72, "vaccine": "Vaccin contre la diphtérie, le tétanos, la coqueluche et la poliomyélite + Vaccin contre l'hépatite A"},
+        {"age": 144, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral+ Vaccin contre le Papillomavirus Humain"},
         {"age": 216, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral"}
     ]
     
@@ -376,7 +266,7 @@ def get_vaccine_history_and_next(age_in_months):
         {"age": 12, "vaccine": "Vaccin contre la rougeole et la rubéole + Vaccin contre l'hépatite A"},
         {"age": 18, "vaccine": "Vaccin contre la diphtérie, le tétanos et la coqueluche + Vaccin polio oral + Vaccin contre la rougeole et la rubéole"},
         {"age": 72, "vaccine": "Vaccin contre la diphtérie, le tétanos, la coqueluche et la poliomyélite + Vaccin contre l'hépatite A"},
-        {"age": 144, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral"},
+        {"age": 144, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral+ Vaccin contre le Papillomavirus Humain"},
         {"age": 216, "vaccine": "Vaccin contre la diphtérie et le tétanos + Vaccin Polio oral"}
     ]
     

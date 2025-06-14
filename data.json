@@ -4,12 +4,12 @@
             "password": "scrypt:32768:8:1$bqniVoxx11GA1vFS$b94a5bbe0493cad9b68089014e5cbd162bc3c6a46c974b2217edb92182b581fac5f3fa9a8a945756526dde5abb0ada5fabbb571a0b08206e8689a82e1c914af7",
             "children": [
                 {
-                    "initials": "YM",
-                    "birth_date": "12/11/2018"
-                },
-                {
                     "initials": "SM",
                     "birth_date": "28/09/2020"
+                },
+                {
+                    "initials": "YM",
+                    "birth_date": "01/06/2017"
                 }
             ]
         },
